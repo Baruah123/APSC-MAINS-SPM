@@ -26,6 +26,7 @@ export default function MobileStep() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+  const [isRecaptchaVerified, setIsRecaptchaVerified] = useState(false);
 
   const mobileForm = useRHForm<MobileFormValues>({
     resolver: zodResolver(mobileSchema),
@@ -47,9 +48,11 @@ export default function MobileStep() {
           callback: (response: any) => {
             // reCAPTCHA solved
             console.log("Recaptcha solved!");
+            setIsRecaptchaVerified(true);
           },
           'expired-callback': () => {
             console.log("Recaptcha expired.");
+            setIsRecaptchaVerified(false);
             if (window.grecaptcha && window.recaptchaVerifier) {
                 window.recaptchaVerifier.clear();
                 window.recaptchaVerifier = null;
@@ -116,13 +119,21 @@ export default function MobileStep() {
       setIsOtpSent(true);
     } catch (error: any) {
       console.error("Firebase sendOtp error:", error);
-      setErrorMsg(error.message || 'Failed to send OTP. Please try again.');
+      
+      if (error.code === 'auth/too-many-requests' || error.message?.includes('too-many-requests')) {
+        setErrorMsg('You have requested an OTP too many times. Please try again later.');
+      } else if (error.code === 'auth/invalid-app-credential' || error.message?.includes('invalid-app-credential')) {
+        setErrorMsg('Security verification failed. Please refresh the page and try again.');
+      } else {
+        setErrorMsg('Failed to send OTP. Please try again.');
+      }
       
       // Reset recaptcha on error so they can try again
       if (window.recaptchaVerifier) {
          try {
            window.recaptchaVerifier.clear();
            window.recaptchaVerifier = null;
+           setIsRecaptchaVerified(false);
            // Re-initialize
            window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
               size: 'normal'
@@ -198,8 +209,12 @@ export default function MobileStep() {
           
           <button
             type="submit"
-            disabled={loading}
-            className="w-full bg-[#1a56db] text-white font-medium py-3.5 px-4 rounded-lg hover:bg-[#1546b5] focus:ring-4 focus:ring-[#edf2fa] transition-colors disabled:opacity-70 flex justify-center items-center text-[15px] tracking-wide"
+            disabled={loading || !isRecaptchaVerified}
+            className={`w-full text-white font-medium py-3.5 px-4 rounded-lg focus:ring-4 focus:ring-[#edf2fa] transition-colors flex justify-center items-center text-[15px] tracking-wide ${
+              loading || !isRecaptchaVerified 
+                ? 'bg-blue-400 cursor-not-allowed opacity-70' 
+                : 'bg-[#1a56db] hover:bg-[#1546b5]'
+            }`}
           >
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Send OTP'}
           </button>
