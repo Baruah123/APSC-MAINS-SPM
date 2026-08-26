@@ -104,6 +104,7 @@ export default async function AdminRegistrationsPage({
                       <div>
                         <div className="font-semibold text-gray-900 whitespace-nowrap">{reg.candidate_name}</div>
                         <div className="text-gray-500 text-xs whitespace-nowrap">{reg.roll_number}</div>
+                        <div className="text-blue-600 text-xs whitespace-nowrap mt-0.5">{reg.email}</div>
                       </div>
                     </div>
                   </td>

@@ -96,6 +96,7 @@ export default async function AdminDashboardPage() {
                   <td className="p-4">
                     <div className="font-semibold text-gray-900 whitespace-nowrap">{reg.candidate_name}</div>
                     <div className="text-gray-500 text-xs whitespace-nowrap">{reg.roll_number}</div>
+                    <div className="text-blue-600 text-xs whitespace-nowrap mt-0.5">{reg.email}</div>
                   </td>
                   <td className="p-4 text-gray-700 whitespace-nowrap">{reg.mobile_number}</td>
                   <td className="p-4">
