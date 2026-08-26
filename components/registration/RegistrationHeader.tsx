@@ -49,7 +49,7 @@ export default function RegistrationHeader() {
         <h3 className="text-gray-900 text-base md:text-lg mb-4">All Assam Open Mains Mock Test Schedule.</h3>
         <div className="rounded-md border border-[#8ea9db] overflow-hidden">
           <img 
-            src="/unnamed.png" 
+            src="/unnamed.jpeg" 
             alt="All Assam Open Mains Mock Test Schedule" 
             width="1200" 
             height="600" 

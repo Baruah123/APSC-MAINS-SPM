@@ -14,6 +14,11 @@ type WizardState = {
   mockTestMode: 'online' | 'offline' | '';
   preferredLocation: string;
   secondPreferredLocation: string;
+  courseEnrolledIn: string;
+  otherCourseDetails: string;
+  yearOfEnrollment: string;
+  monthOfEnrollment: string;
+  batchTiming: string;
   acceptance: boolean;
 };
 
@@ -36,6 +41,11 @@ const initialState: WizardState = {
   mockTestMode: '',
   preferredLocation: '',
   secondPreferredLocation: '',
+  courseEnrolledIn: '',
+  otherCourseDetails: '',
+  yearOfEnrollment: '',
+  monthOfEnrollment: '',
+  batchTiming: '',
   acceptance: false,
 };
 
@@ -69,7 +79,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
   };
 
   const nextStep = () => {
-    setState((prev) => ({ ...prev, currentStep: Math.min(prev.currentStep + 1, 6) }));
+    setState((prev) => ({ ...prev, currentStep: Math.min(prev.currentStep + 1, 7) }));
   };
 
   const prevStep = () => {

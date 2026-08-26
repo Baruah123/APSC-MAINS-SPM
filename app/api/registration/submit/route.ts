@@ -39,7 +39,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
     }
 
-    const { email, mock_test_mode, preferred_location, second_preferred_location } = result.data;
+    const { 
+      email, 
+      mock_test_mode, 
+      preferred_location, 
+      second_preferred_location,
+      course_enrolled_in,
+      other_course_details,
+      year_of_enrollment,
+      month_of_enrollment,
+      batch_timing
+    } = result.data;
 
     if (mock_test_mode === 'offline' && (!preferred_location || !second_preferred_location)) {
         return NextResponse.json({ error: 'Both 1st and 2nd Preferred locations are required for offline mock test.' }, { status: 400 });
@@ -87,6 +97,11 @@ export async function POST(request: Request) {
         mock_test_mode,
         preferred_location: mock_test_mode === 'offline' ? preferred_location : null,
         second_preferred_location: mock_test_mode === 'offline' ? second_preferred_location : null,
+        course_enrolled_in,
+        other_course_details: other_course_details || null,
+        year_of_enrollment: year_of_enrollment || null,
+        month_of_enrollment: month_of_enrollment || null,
+        batch_timing: batch_timing || null,
         acceptance: true,
         acceptance_timestamp: new Date().toISOString(),
         status: 'registered',

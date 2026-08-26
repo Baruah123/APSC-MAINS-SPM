@@ -38,6 +38,11 @@ export async function GET(request: Request) {
       'Test Mode': reg.mock_test_mode === 'offline' ? 'Offline' : 'Online',
       'Preferred Center 1': reg.mock_test_mode === 'offline' && reg.preferred_location ? (locationMap[reg.preferred_location] || reg.preferred_location) : 'N/A',
       'Preferred Center 2': reg.mock_test_mode === 'offline' && reg.second_preferred_location ? (locationMap[reg.second_preferred_location] || reg.second_preferred_location) : 'N/A',
+      'Course Enrolled': reg.course_enrolled_in || 'N/A',
+      'Other Course Details': reg.other_course_details || '',
+      'Year of Enrollment': reg.year_of_enrollment || '',
+      'Month of Enrollment': reg.month_of_enrollment || '',
+      'Batch Timing': reg.batch_timing || '',
       'Transaction ID': reg.transaction_id,
       'Status': reg.status,
       'Remarks': reg.remarks || '',
@@ -62,6 +67,11 @@ export async function GET(request: Request) {
       { wch: 10 }, // Test Mode
       { wch: 25 }, // Preferred Center 1
       { wch: 25 }, // Preferred Center 2
+      { wch: 35 }, // Course Enrolled
+      { wch: 30 }, // Other Course Details
+      { wch: 20 }, // Year of Enrollment
+      { wch: 20 }, // Month of Enrollment
+      { wch: 20 }, // Batch Timing
       { wch: 25 }, // Transaction ID
       { wch: 15 }, // Status
       { wch: 40 }, // Remarks

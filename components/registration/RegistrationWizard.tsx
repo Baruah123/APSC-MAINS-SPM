@@ -6,6 +6,7 @@ import MobileStep from './MobileStep';
 import RollNumberStep from './RollNumberStep';
 import PhotoStep from './PhotoStep';
 import EmailStep from './EmailStep';
+import CourseEnrollmentStep from './CourseEnrollmentStep';
 import TestModeStep from './TestModeStep';
 import ReviewStep from './ReviewStep';
 import { CheckCircle2 } from 'lucide-react';
@@ -15,8 +16,9 @@ const steps = [
   { id: 2, title: 'Roll Number' },
   { id: 3, title: 'Photo' },
   { id: 4, title: 'Email' },
-  { id: 5, title: 'Test Mode' },
-  { id: 6, title: 'Confirm' },
+  { id: 5, title: 'Enrollment' },
+  { id: 6, title: 'Test Mode' },
+  { id: 7, title: 'Confirm' },
 ];
 
 export default function RegistrationWizard() {
@@ -63,8 +65,9 @@ export default function RegistrationWizard() {
         {state.currentStep === 2 && <RollNumberStep />}
         {state.currentStep === 3 && <PhotoStep />}
         {state.currentStep === 4 && <EmailStep />}
-        {state.currentStep === 5 && <TestModeStep />}
-        {state.currentStep === 6 && <ReviewStep />}
+        {state.currentStep === 5 && <CourseEnrollmentStep />}
+        {state.currentStep === 6 && <TestModeStep />}
+        {state.currentStep === 7 && <ReviewStep />}
       </div>
     </div>
   );

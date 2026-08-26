@@ -38,27 +38,39 @@ export default function MobileStep() {
   });
 
   useEffect(() => {
-    // Initialize Firebase Recaptcha
+    // Initialize Firebase Recaptcha as a VISIBLE widget.
+    // This completely eliminates the invisible lifecycle bugs and "u is null" errors.
     if (typeof window !== 'undefined' && !window.recaptchaVerifier) {
       try {
         window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-          size: 'invisible',
-          callback: () => {
+          size: 'normal',
+          callback: (response: any) => {
             // reCAPTCHA solved
+            console.log("Recaptcha solved!");
+          },
+          'expired-callback': () => {
+            console.log("Recaptcha expired.");
+            if (window.grecaptcha && window.recaptchaVerifier) {
+                window.recaptchaVerifier.clear();
+                window.recaptchaVerifier = null;
+            }
           }
         });
+        
+        window.recaptchaVerifier.render();
       } catch (e) {
         console.error("Recaptcha init error:", e);
       }
     }
 
     return () => {
-       if (window.recaptchaVerifier) {
-          try {
-             window.recaptchaVerifier.clear();
-          } catch(e) {}
+      // Clean up on unmount for React Strict Mode
+      if (window.recaptchaVerifier) {
+        try {
+          window.recaptchaVerifier.clear();
           window.recaptchaVerifier = null;
-       }
+        } catch(e) {}
+      }
     };
   }, []);
 
@@ -90,8 +102,10 @@ export default function MobileStep() {
       // 2. Trigger Firebase OTP
       const phoneNumber = `+91${data.mobile}`;
       if (!window.recaptchaVerifier) {
-         throw new Error("Recaptcha is not initialized yet.");
+         throw new Error("Recaptcha is not initialized. Please refresh the page.");
       }
+      
+      console.log("Firebase App Config:", auth.app.options);
       
       const appVerifier = window.recaptchaVerifier;
       const result = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
@@ -105,11 +119,15 @@ export default function MobileStep() {
       setErrorMsg(error.message || 'Failed to send OTP. Please try again.');
       
       // Reset recaptcha on error so they can try again
-      if (window.grecaptcha && window.recaptchaVerifier) {
+      if (window.recaptchaVerifier) {
          try {
-           window.recaptchaVerifier.render().then((widgetId: number) => {
-              window.grecaptcha.reset(widgetId);
-           }).catch(() => {}); // ignore render errors
+           window.recaptchaVerifier.clear();
+           window.recaptchaVerifier = null;
+           // Re-initialize
+           window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+              size: 'normal'
+           });
+           window.recaptchaVerifier.render();
          } catch(e) {}
       }
     } finally {

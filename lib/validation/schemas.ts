@@ -33,10 +33,24 @@ export const modeSchema = z.object({
 
 export const finalSubmissionSchema = z.object({
   email: z.string().email('Please enter a valid email address').trim().toLowerCase(),
+  course_enrolled_in: z.string().min(1, 'Please select your enrolled course'),
+  other_course_details: z.string().optional(),
+  year_of_enrollment: z.string().optional(),
+  month_of_enrollment: z.string().optional(),
+  batch_timing: z.string().optional(),
   mock_test_mode: z.enum(['online', 'offline'], { error: 'Please select a mock test mode' }),
   preferred_location: z.string().uuid("Please select a valid location").or(z.literal('')).optional(),
   second_preferred_location: z.string().uuid("Please select a valid location").or(z.literal('')).optional(),
   acceptance: z.literal(true, {
     error: "You must accept the terms and conditions."
   })
+}).refine(data => {
+  const needsDetails = ['APSC Foundation Batch', 'UPSC Foundation Batch', 'Combined Foundation Batch', 'Old Crash Course', 'Crash Course / Test Series Student'].includes(data.course_enrolled_in);
+  if (needsDetails) {
+    return data.year_of_enrollment && data.month_of_enrollment && data.batch_timing;
+  }
+  return true;
+}, {
+  message: "Please fill in all enrollment details",
+  path: ["batch_timing"]
 });

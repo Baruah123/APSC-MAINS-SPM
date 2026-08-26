@@ -46,7 +46,12 @@ export default function ReviewStep() {
           email: state.email,
           mock_test_mode: state.mockTestMode,
           preferred_location: state.preferredLocation,
-          second_preferred_location: state.secondPreferredLocation
+          second_preferred_location: state.secondPreferredLocation,
+          course_enrolled_in: state.courseEnrolledIn,
+          other_course_details: state.otherCourseDetails,
+          year_of_enrollment: state.yearOfEnrollment,
+          month_of_enrollment: state.monthOfEnrollment,
+          batch_timing: state.batchTiming
         })
       });
       
@@ -120,6 +125,23 @@ export default function ReviewStep() {
 
           <div className="flex justify-between items-start pt-3 border-t border-gray-200">
             <div>
+              <p className="text-sm text-gray-500">Course Enrollment</p>
+              <p className="font-medium text-gray-900">{state.courseEnrolledIn || 'N/A'}</p>
+              {state.courseEnrolledIn === 'Others' && state.otherCourseDetails && (
+                <p className="text-sm text-gray-600 mt-1">Details: {state.otherCourseDetails}</p>
+              )}
+              {['APSC Foundation Batch', 'UPSC Foundation Batch', 'Combined Foundation Batch', 'Old Crash Course', 'Crash Course / Test Series Student'].includes(state.courseEnrolledIn) && (
+                <div className="mt-2 space-y-1">
+                  <p className="text-sm text-gray-600"><span className="font-medium text-gray-700">Year:</span> {state.yearOfEnrollment}</p>
+                  <p className="text-sm text-gray-600"><span className="font-medium text-gray-700">Month:</span> {state.monthOfEnrollment}</p>
+                  <p className="text-sm text-gray-600"><span className="font-medium text-gray-700">Batch Timing:</span> {state.batchTiming}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex justify-between items-start pt-3 border-t border-gray-200">
+            <div>
               <p className="text-sm text-gray-500">Mock Test Mode</p>
               <p className="font-medium text-gray-900 capitalize">{state.mockTestMode || 'N/A'}</p>
               {state.mockTestMode === 'offline' && (
@@ -140,16 +162,17 @@ export default function ReviewStep() {
               checked={acceptance}
               onChange={(e) => setAcceptance(e.target.checked)}
             />
-            <span className="text-sm text-gray-700">
-              I accept the terms and conditions for the {state.mockTestMode} mock test and confirm that all details provided are correct.
-            </span>
+            <div className="text-sm text-gray-700">
+              <span className="font-semibold block mb-1">Declaration-</span>
+              I hereby declare that the details provided above are true to the best of my knowledge. I understand that the Mock Test is being conducted by SPM IAS Academy for practice purposes only, and the academy reserves the right to use my registration details for communication regarding this test and related academic activities. I also agree to abide by the exam guidelines (both online & offline) as shared by the academy.
+            </div>
           </label>
         </div>
 
         <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
           <button
             type="button"
-            onClick={() => setStep(5)}
+            onClick={() => setStep(6)}
             disabled={loading}
             className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
           >

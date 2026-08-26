@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { createClient as updateSupabaseSession } from '@/utils/supabase/middleware';
 import { decrypt } from '@/lib/security/session';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // Always update the supabase session if it's there
   let response = updateSupabaseSession(request);
   if (!response) {

@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     }
 
     if (!candidate) {
-      return NextResponse.json({ error: 'Invalid Roll Number. Not found in the cleared candidates list.' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid Roll Number.' }, { status: 400 });
     }
 
     // 2. Check if already registered
