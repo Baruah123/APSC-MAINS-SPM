@@ -111,7 +111,8 @@ export async function POST(request: Request) {
     await clearSession();
 
     // 8. Trigger Google Sheets Sync (Fire and Forget)
-    fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/google/sync`, {
+    const baseUrl = new URL(request.url).origin;
+    fetch(`${baseUrl}/api/google/sync`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ registration_id: insertData.id })
