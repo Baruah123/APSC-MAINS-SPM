@@ -49,8 +49,21 @@ export default function RegistrationHeader() {
         <h3 className="text-gray-900 text-base md:text-lg mb-4">All Assam Open Mains Mock Test Schedule.</h3>
         <div className="rounded-md border border-[#8ea9db] overflow-hidden">
           <img 
-            src="/unnamed.jpeg" 
+            src="/unnamed.jpg" 
             alt="All Assam Open Mains Mock Test Schedule" 
+            width="1200" 
+            height="600" 
+            className="w-full h-auto block"
+          />
+        </div>
+      </div>
+
+      {/* Additional Information Image Card */}
+      <div className="w-full max-w-4xl bg-white rounded-xl shadow-sm border border-gray-300 overflow-hidden p-5 md:p-6 mb-4 animate-in fade-in slide-in-from-top-8 duration-1000">
+        <div className="rounded-md border border-gray-200 overflow-hidden">
+          <img 
+            src="/b921dc15-fc2a-4143-88e4-4ad0c4748694.jpg" 
+            alt="Mains Mock Test Details" 
             width="1200" 
             height="600" 
             className="w-full h-auto block"

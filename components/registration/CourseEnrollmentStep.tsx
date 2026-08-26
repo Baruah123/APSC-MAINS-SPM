@@ -15,7 +15,7 @@ const COURSE_OPTIONS = [
 
 const YEARS = Array.from({ length: 8 }, (_, i) => String(2019 + i));
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const TIMINGS = ['9:30', '11:30', '4PM (English)', '4PM (Assamese)', '7PM'];
+const TIMINGS = ['9:30 AM', '11:30 AM', '4 PM (English)', '4 PM (Assamese)', '7PM (Working professional)'];
 
 export default function CourseEnrollmentStep() {
   const { state, updateState, nextStep, prevStep } = useWizard();
