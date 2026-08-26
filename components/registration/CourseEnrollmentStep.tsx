@@ -107,7 +107,7 @@ export default function CourseEnrollmentStep() {
                 if (errorMsg) setErrorMsg('');
               }}
               placeholder="Enter course details"
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-all"
             />
           </div>
         )}
@@ -124,7 +124,7 @@ export default function CourseEnrollmentStep() {
                   updateState({ yearOfEnrollment: e.target.value });
                   if (errorMsg) setErrorMsg('');
                 }}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-all bg-white"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-all bg-white"
               >
                 <option value="">Select Year</option>
                 {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
@@ -141,7 +141,7 @@ export default function CourseEnrollmentStep() {
                   updateState({ monthOfEnrollment: e.target.value });
                   if (errorMsg) setErrorMsg('');
                 }}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-all bg-white"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-all bg-white"
               >
                 <option value="">Select Month</option>
                 {MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
@@ -158,7 +158,7 @@ export default function CourseEnrollmentStep() {
                   updateState({ batchTiming: e.target.value });
                   if (errorMsg) setErrorMsg('');
                 }}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-all bg-white"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-all bg-white"
               >
                 <option value="">Select Timing</option>
                 {TIMINGS.map(t => <option key={t} value={t}>{t}</option>)}
