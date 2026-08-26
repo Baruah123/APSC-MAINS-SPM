@@ -5,11 +5,10 @@ import { Search, Download } from 'lucide-react';
 import ImageThumbnail from '@/components/admin/ImageThumbnail';
 import RemarkCell from '@/components/admin/RemarkCell';
 
-export default async function AdminRegistrationsPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
+export default async function AdminRegistrationsPage(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const searchParams = await props.searchParams;
   const query = typeof searchParams.q === 'string' ? searchParams.q : '';
   const page = typeof searchParams.page === 'string' ? parseInt(searchParams.page) : 1;
   const pageSize = 1000;
