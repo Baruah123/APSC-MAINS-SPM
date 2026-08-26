@@ -207,6 +207,8 @@ export default function MobileStep() {
             )}
           </div>
           
+          <div id="recaptcha-container" className="flex justify-center mt-4 mb-4 w-full"></div>
+          
           <button
             type="submit"
             disabled={loading || !isRecaptchaVerified}
@@ -218,8 +220,6 @@ export default function MobileStep() {
           >
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Send OTP'}
           </button>
-          
-          <div id="recaptcha-container" className="flex justify-center mt-4 w-full"></div>
         </form>
       ) : (
         <form onSubmit={otpForm.handleSubmit(onVerifyOtp)} className="space-y-4">
