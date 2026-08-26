@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import React from 'react';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { Users, CheckCircle, MonitorSmartphone, MapPin } from 'lucide-react';
