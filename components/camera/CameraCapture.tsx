@@ -58,21 +58,7 @@ export default function CameraCapture({ onCapture, onCancel }: CameraCaptureProp
     }
   };
 
-  // Automatic capture upon Liveness Passed with Countdown
-  useEffect(() => {
-    if (liveness.state === 'LIVENESS_PASSED' && !isCapturing && countdown === null) {
-      setCountdown(3);
-    }
-  }, [liveness.state, isCapturing, countdown]);
-
-  useEffect(() => {
-    if (countdown !== null && countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (countdown === 0 && !isCapturing) {
-      takeAndValidatePhoto();
-    }
-  }, [countdown, isCapturing]);
+  // Removed automatic countdown as per user request to capture manually
 
   const takeAndValidatePhoto = async () => {
     if (!videoRef.current || !canvasRef.current) return;
@@ -155,7 +141,7 @@ export default function CameraCapture({ onCapture, onCancel }: CameraCaptureProp
               playsInline
               muted
               onPlay={handleVideoPlay}
-              className={`absolute inset-0 w-full h-full object-cover transform -scale-x-100 ${isCapturing ? 'opacity-50' : 'opacity-100'}`}
+              className={`absolute inset-0 w-full h-full object-cover ${isCapturing ? 'opacity-50' : 'opacity-100'}`}
             />
             
             {/* Face Guide Overlay */}
@@ -163,20 +149,14 @@ export default function CameraCapture({ onCapture, onCancel }: CameraCaptureProp
             
             {/* Status Overlay */}
             <div className="absolute top-4 inset-x-0 flex justify-center px-4 text-center">
-              <div className={`px-4 py-2 rounded-xl text-sm font-medium shadow-lg flex items-center gap-2 backdrop-blur-md text-white transition-colors duration-300 ${countdown !== null && countdown > 0 ? 'bg-indigo-600/90 text-lg scale-110 shadow-indigo-500/50' : getStatusBannerColor()}`}>
-                {countdown !== null && countdown > 0 ? (
-                  <span>📸 Look directly at the camera! ({countdown})</span>
-                ) : (
-                  <>
-                    {!isModelLoaded || isCapturing ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                    {isCapturing ? 'Capturing & Validating Photo...' : liveness.message}
-                  </>
-                )}
+              <div className={`px-4 py-2 rounded-xl text-sm font-medium shadow-lg flex items-center gap-2 backdrop-blur-md text-white transition-colors duration-300 ${getStatusBannerColor()}`}>
+                {!isModelLoaded || isCapturing ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                {isCapturing ? 'Validating Photo...' : liveness.message}
               </div>
             </div>
 
             {/* Challenge Progress Indicators */}
-            {(liveness.state.includes('CHALLENGE') || liveness.state === 'LIVENESS_PASSED') && !isCapturing && countdown === null && (
+            {(liveness.state.includes('CHALLENGE') || liveness.state === 'LIVENESS_PASSED') && !isCapturing && (
               <div className="absolute bottom-6 inset-x-0 flex flex-col items-center gap-2 bg-black/40 backdrop-blur-sm mx-8 py-3 rounded-xl border border-white/20">
                 <div className="flex items-center gap-2 text-white text-sm font-medium">
                   {liveness.state === 'CHALLENGE_1' ? (
@@ -210,13 +190,23 @@ export default function CameraCapture({ onCapture, onCancel }: CameraCaptureProp
                Cancel
              </button>
              
-             {liveness.state === 'LIVENESS_FAILED' && (
+             {liveness.state === 'LIVENESS_FAILED' ? (
                <button
                  type="button"
                  onClick={startCamera} // Restarts everything
                  className="flex-1 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors shadow-md"
                >
                  Restart Camera
+               </button>
+             ) : (
+               <button
+                 type="button"
+                 onClick={takeAndValidatePhoto}
+                 disabled={isCapturing || !isModelLoaded}
+                 className="flex-1 flex items-center justify-center gap-2 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors shadow-md disabled:opacity-50"
+               >
+                 <Camera className="w-5 h-5" />
+                 {isCapturing ? 'Capturing...' : 'Capture'}
                </button>
              )}
           </div>

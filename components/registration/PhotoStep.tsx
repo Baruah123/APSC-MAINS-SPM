@@ -3,13 +3,24 @@
 import React, { useState } from 'react';
 import { useWizard } from './WizardContext';
 import CameraCapture from '../camera/CameraCapture';
-import { Camera, CheckCircle } from 'lucide-react';
+import { Camera, CheckCircle, Upload } from 'lucide-react';
 
 export default function PhotoStep() {
   const { state, updateState, nextStep, prevStep } = useWizard();
   const [showCamera, setShowCamera] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setErrorMsg('File size must be less than 5MB');
+        return;
+      }
+      handleCapture(file);
+    }
+  };
 
   const handleCapture = async (blob: Blob) => {
     setLoading(true);
@@ -73,13 +84,27 @@ export default function PhotoStep() {
                 Please make sure you are in a well-lit area. Look directly at the camera and ensure no one else is in the frame.
               </p>
               
-              <button
-                type="button"
-                onClick={() => setShowCamera(true)}
-                className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-              >
-                Open Camera
-              </button>
+              <div className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center mt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCamera(true)}
+                  disabled={loading}
+                  className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <Camera className="w-5 h-5" /> Open Camera
+                </button>
+                <div className="text-gray-400 font-medium uppercase text-xs">or</div>
+                <label className={`w-full sm:w-auto px-6 py-3 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors shadow-sm flex items-center justify-center gap-2 ${loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
+                  <Upload className="w-5 h-5 text-gray-500" /> Upload Image
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    className="hidden" 
+                    onChange={handleFileUpload}
+                    disabled={loading}
+                  />
+                </label>
+              </div>
             </div>
             
             <div className="flex gap-3 pt-2">
@@ -102,14 +127,30 @@ export default function PhotoStep() {
         )
       ) : (
         <div className="space-y-6">
-           <div className="p-5 bg-green-50 border border-green-200 rounded-xl flex items-center gap-4">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <CheckCircle className="w-6 h-6 text-green-600" />
+           <div className="p-5 bg-green-50 border border-green-200 rounded-xl flex items-start sm:items-center justify-between flex-col sm:flex-row gap-4">
+              <div className="flex items-center gap-4">
+                {state.photoPreview ? (
+                  <img src={state.photoPreview} alt="Captured" className="w-16 h-16 object-cover rounded-lg border border-green-200 shadow-sm" />
+                ) : (
+                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="w-6 h-6 text-green-600" />
+                  </div>
+                )}
+                <div>
+                  <h3 className="text-lg font-semibold text-green-900">Photo Saved Successfully</h3>
+                  <p className="text-sm text-green-800 mt-1">Your photo looks great!</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-green-900">Photo Uploaded Successfully</h3>
-                <p className="text-sm text-green-800 mt-1">Your photo has been securely stored.</p>
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  updateState({ photoPath: undefined, photoPreview: undefined });
+                  setShowCamera(true);
+                }}
+                className="px-4 py-2 bg-white border border-green-300 text-green-700 text-sm font-medium rounded-lg hover:bg-green-100 transition-colors whitespace-nowrap shadow-sm"
+              >
+                Retake Photo
+              </button>
           </div>
           
           <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">

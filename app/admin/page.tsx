@@ -26,11 +26,36 @@ export default async function AdminDashboardPage() {
     .select('*', { count: 'exact', head: true })
     .eq('status', 'completed');
 
-  const { data: latestRegistrations } = await supabaseAdmin
+  const { data: offlineRegistrations } = await supabaseAdmin
     .from('registrations')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(10);
+    .select('preferred_location, second_preferred_location')
+    .eq('mock_test_mode', 'offline');
+
+  const { data: locations } = await supabaseAdmin.from('test_locations').select('id, name');
+  const locationMap: Record<string, string> = locations?.reduce((acc: any, loc: any) => {
+    acc[loc.id] = loc.name;
+    return acc;
+  }, {}) || {};
+
+  const pref1Counts: Record<string, number> = {};
+  const pref2Counts: Record<string, number> = {};
+
+  offlineRegistrations?.forEach(reg => {
+    if (reg.preferred_location) {
+      pref1Counts[reg.preferred_location] = (pref1Counts[reg.preferred_location] || 0) + 1;
+    }
+    if (reg.second_preferred_location) {
+      pref2Counts[reg.second_preferred_location] = (pref2Counts[reg.second_preferred_location] || 0) + 1;
+    }
+  });
+
+  const topPref1 = Object.entries(pref1Counts)
+    .map(([id, count]) => ({ name: locationMap[id] || id, count }))
+    .sort((a, b) => b.count - a.count);
+
+  const topPref2 = Object.entries(pref2Counts)
+    .map(([id, count]) => ({ name: locationMap[id] || id, count }))
+    .sort((a, b) => b.count - a.count);
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -78,56 +103,35 @@ export default async function AdminDashboardPage() {
         </div>
       </div>
 
-      <div className="mt-8 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Latest 10 Registrations</h3>
-        <div className="overflow-x-auto pb-4">
-          <table className="w-full text-left border-collapse border border-gray-200 [&_th]:border [&_th]:border-gray-200 [&_td]:border [&_td]:border-gray-200">
-            <thead>
-              <tr className="bg-gray-50 border-y border-gray-200 text-sm font-semibold text-gray-600">
-                <th className="p-4">Candidate</th>
-                <th className="p-4">Mobile</th>
-                <th className="p-4">Course</th>
-                <th className="p-4">Mode</th>
-                <th className="p-4">Date</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 text-sm">
-              {latestRegistrations?.map((reg) => (
-                <tr key={reg.id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                  <td className="p-4">
-                    <div className="font-semibold text-gray-900 whitespace-nowrap">{reg.candidate_name}</div>
-                    <div className="text-gray-500 text-xs whitespace-nowrap">{reg.roll_number}</div>
-                    <div className="text-blue-600 text-xs whitespace-nowrap mt-0.5">{reg.email}</div>
-                  </td>
-                  <td className="p-4 text-gray-700 whitespace-nowrap">{reg.mobile_number}</td>
-                  <td className="p-4 max-w-xs">
-                    <div className="text-gray-900 font-medium">{reg.course_enrolled_in || 'N/A'}</div>
-                    {reg.course_enrolled_in === 'Others' && reg.other_course_details && (
-                      <div className="text-xs text-gray-500 mt-0.5">{reg.other_course_details}</div>
-                    )}
-                    {['APSC Foundation Batch', 'UPSC Foundation Batch', 'Combined Foundation Batch', 'Old Crash Course', 'Crash Course / Test Series Student'].includes(reg.course_enrolled_in) && (
-                      <div className="text-xs text-gray-500 mt-0.5">
-                        {reg.year_of_enrollment} | {reg.month_of_enrollment} | {reg.batch_timing}
-                      </div>
-                    )}
-                  </td>
-                  <td className="p-4">
-                    <span className="text-gray-700 capitalize font-medium whitespace-nowrap">{reg.mock_test_mode}</span>
-                  </td>
-                  <td className="p-4 text-gray-500 whitespace-nowrap">
-                    {new Date(reg.created_at).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))}
-              {(!latestRegistrations || latestRegistrations.length === 0) && (
-                <tr>
-                  <td colSpan={5} className="p-8 text-center text-gray-500">
-                    No registrations found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+        {/* Box 1: 1st Preference */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <h3 className="text-lg font-bold text-gray-900 mb-4">Top 1st Preference Locations</h3>
+          <div className="space-y-3">
+            {topPref1.length > 0 ? topPref1.map((loc, idx) => (
+              <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <span className="font-medium text-gray-800">{loc.name}</span>
+                <span className="px-3 py-1 bg-blue-100 text-blue-700 font-bold rounded-full text-sm">{loc.count}</span>
+              </div>
+            )) : (
+              <p className="text-gray-500 text-sm">No preferences recorded yet.</p>
+            )}
+          </div>
+        </div>
+
+        {/* Box 2: 2nd Preference */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <h3 className="text-lg font-bold text-gray-900 mb-4">Top 2nd Preference Locations</h3>
+          <div className="space-y-3">
+            {topPref2.length > 0 ? topPref2.map((loc, idx) => (
+              <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <span className="font-medium text-gray-800">{loc.name}</span>
+                <span className="px-3 py-1 bg-green-100 text-green-700 font-bold rounded-full text-sm">{loc.count}</span>
+              </div>
+            )) : (
+              <p className="text-gray-500 text-sm">No preferences recorded yet.</p>
+            )}
+          </div>
         </div>
       </div>
     </div>

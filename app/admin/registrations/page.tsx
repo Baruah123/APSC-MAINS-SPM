@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { Search, Download } from 'lucide-react';
 import ImageThumbnail from '@/components/admin/ImageThumbnail';
 import RemarkCell from '@/components/admin/RemarkCell';
+import SyncSheetsButton from '@/components/admin/SyncSheetsButton';
+import DeleteRegistrationButton from '@/components/admin/DeleteRegistrationButton';
 
 export default async function AdminRegistrationsPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -39,7 +41,7 @@ export default async function AdminRegistrationsPage(props: {
   const totalPages = count ? Math.ceil(count / pageSize) : 0;
 
   return (
-    <div className="max-w-[1400px] w-full mx-auto space-y-6 px-4 lg:px-8">
+    <div className="w-full mx-auto space-y-6 px-4 lg:px-8">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-900">Registrations</h2>
       </div>
@@ -62,6 +64,7 @@ export default async function AdminRegistrationsPage(props: {
             </button>
           </form>
           <div className="flex items-center gap-3">
+            <SyncSheetsButton />
             <a 
               href="/api/admin/export"
               className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors shadow-sm"
@@ -81,9 +84,9 @@ export default async function AdminRegistrationsPage(props: {
                 <th className="p-4">Mobile</th>
                 <th className="p-4">Course</th>
                 <th className="p-4">Mode</th>
-                <th className="p-4">Status</th>
                 <th className="p-4">Date</th>
                 <th className="p-4 w-48">Remarks</th>
+                <th className="p-4 w-16 text-center">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 text-sm">
@@ -110,33 +113,36 @@ export default async function AdminRegistrationsPage(props: {
                   </td>
                   <td className="p-4 text-gray-700 whitespace-nowrap">{reg.mobile_number}</td>
                   <td className="p-4 max-w-xs">
-                    <div className="text-gray-900 font-medium">{reg.course_enrolled_in || 'N/A'}</div>
+                    <div className="text-gray-900 font-semibold mb-1.5">{reg.course_enrolled_in || 'N/A'}</div>
                     {reg.course_enrolled_in === 'Others' && reg.other_course_details && (
-                      <div className="text-xs text-gray-500 mt-0.5">{reg.other_course_details}</div>
+                      <div className="text-xs text-gray-500 bg-gray-50 p-1.5 rounded border border-gray-100">{reg.other_course_details}</div>
                     )}
                     {['APSC Foundation Batch', 'UPSC Foundation Batch', 'Combined Foundation Batch', 'Old Crash Course', 'Crash Course / Test Series Student'].includes(reg.course_enrolled_in) && (
-                      <div className="text-xs text-gray-500 mt-0.5">
-                        {reg.year_of_enrollment} | {reg.month_of_enrollment} | {reg.batch_timing}
+                      <div className="flex flex-wrap gap-1.5">
+                        <span className="px-1.5 py-0.5 bg-gray-100 border border-gray-200 rounded text-[10px] font-semibold text-gray-600">{reg.year_of_enrollment}</span>
+                        <span className="px-1.5 py-0.5 bg-gray-100 border border-gray-200 rounded text-[10px] font-semibold text-gray-600">{reg.month_of_enrollment}</span>
+                        <span className="px-1.5 py-0.5 bg-blue-50 border border-blue-100 rounded text-[10px] font-semibold text-blue-700 whitespace-nowrap">{reg.batch_timing}</span>
                       </div>
                     )}
                   </td>
                   <td className="p-4">
-                    <div className="text-gray-700 capitalize font-medium whitespace-nowrap">{reg.mock_test_mode}</div>
+                    <div className="text-gray-800 capitalize font-semibold mb-2">{reg.mock_test_mode}</div>
                     {reg.mock_test_mode === 'offline' && (
-                      <div className="text-xs text-gray-500 mt-1 space-y-0.5 whitespace-nowrap">
+                      <div className="flex flex-col gap-2">
                         {reg.preferred_location && (
-                          <div><span className="font-medium text-gray-600">1st:</span> {locationMap[reg.preferred_location] || reg.preferred_location}</div>
+                          <div className="flex items-start gap-1.5">
+                            <span className="px-1.5 py-0.5 bg-indigo-50 border border-indigo-100 rounded text-[10px] font-bold text-indigo-700">1ST</span>
+                            <span className="text-xs text-gray-600 leading-tight">{locationMap[reg.preferred_location] || reg.preferred_location}</span>
+                          </div>
                         )}
                         {reg.second_preferred_location && (
-                          <div><span className="font-medium text-gray-600">2nd:</span> {locationMap[reg.second_preferred_location] || reg.second_preferred_location}</div>
+                          <div className="flex items-start gap-1.5">
+                            <span className="px-1.5 py-0.5 bg-purple-50 border border-purple-100 rounded text-[10px] font-bold text-purple-700">2ND</span>
+                            <span className="text-xs text-gray-600 leading-tight">{locationMap[reg.second_preferred_location] || reg.second_preferred_location}</span>
+                          </div>
                         )}
                       </div>
                     )}
-                  </td>
-                  <td className="p-4">
-                    <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                      {reg.status}
-                    </span>
                   </td>
                   <td className="p-4 text-gray-500 whitespace-nowrap">
                     {new Date(reg.created_at).toLocaleDateString()}
@@ -144,11 +150,14 @@ export default async function AdminRegistrationsPage(props: {
                   <td className="p-4 min-w-[200px]">
                     <RemarkCell registrationId={reg.id} initialRemark={reg.remarks} />
                   </td>
+                  <td className="p-4 text-center">
+                    <DeleteRegistrationButton id={reg.id} />
+                  </td>
                 </tr>
               ))}
               {(!registrations || registrations.length === 0) && (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-gray-500">
+                  <td colSpan={7} className="p-8 text-center text-gray-500">
                     No registrations found.
                   </td>
                 </tr>

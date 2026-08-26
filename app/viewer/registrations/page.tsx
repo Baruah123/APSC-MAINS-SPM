@@ -39,7 +39,7 @@ export default async function AdminRegistrationsPage(props: {
   const totalPages = count ? Math.ceil(count / pageSize) : 0;
 
   return (
-    <div className="max-w-[1400px] w-full mx-auto space-y-6 px-4 lg:px-8">
+    <div className="w-full mx-auto space-y-6 px-4 lg:px-8">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-900">Registrations</h2>
       </div>
@@ -61,18 +61,20 @@ export default async function AdminRegistrationsPage(props: {
               Search
             </button>
           </form>
+          <div className="flex items-center gap-3">
+            {/* Sync button removed for viewers */}
+          </div>
           {/* Add more filters here: Mode, Status, Date */}
         </div>
 
         <div className="overflow-x-auto pb-4">
-          <table className="w-full min-w-[1200px] text-left border-collapse border border-gray-200 [&_th]:border [&_th]:border-gray-200 [&_td]:border [&_td]:border-gray-200">
+          <table className="w-full text-left border-collapse border border-gray-200 [&_th]:border [&_th]:border-gray-200 [&_td]:border [&_td]:border-gray-200">
             <thead>
               <tr className="bg-gray-50 border-y border-gray-200 text-sm font-semibold text-gray-600">
                 <th className="p-4">Reg ID</th>
                 <th className="p-4">Candidate</th>
                 <th className="p-4">Mobile</th>
                 <th className="p-4">Mode</th>
-                <th className="p-4">Status</th>
                 <th className="p-4">Date</th>
                 <th className="p-4 w-48">Remarks</th>
               </tr>
@@ -114,11 +116,6 @@ export default async function AdminRegistrationsPage(props: {
                       </div>
                     )}
                   </td>
-                  <td className="p-4">
-                    <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                      {reg.status}
-                    </span>
-                  </td>
                   <td className="p-4 text-gray-500 whitespace-nowrap">
                     {new Date(reg.created_at).toLocaleDateString()}
                   </td>
@@ -129,7 +126,7 @@ export default async function AdminRegistrationsPage(props: {
               ))}
               {(!registrations || registrations.length === 0) && (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-gray-500">
+                  <td colSpan={5} className="p-8 text-center text-gray-500">
                     No registrations found.
                   </td>
                 </tr>
