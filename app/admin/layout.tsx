@@ -21,7 +21,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <AdminAuthProvider>
-      <div className="min-h-screen bg-gray-100 flex">
+      <div className="h-screen bg-gray-100 flex overflow-hidden">
       {/* Sidebar */}
       <div className="w-48 bg-white border-r border-gray-200 flex flex-col hidden md:flex">
         <div className="h-16 flex items-center px-6 border-b border-gray-200">

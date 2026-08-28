@@ -15,6 +15,7 @@ export default function ImageThumbnail({ url, alt }: { url: string; alt: string 
         <img 
           src={url} 
           alt={alt}
+          loading="lazy"
           className="w-full h-full object-cover"
         />
       </div>
