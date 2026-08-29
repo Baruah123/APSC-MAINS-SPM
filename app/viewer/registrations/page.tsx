@@ -71,9 +71,9 @@ export default async function AdminRegistrationsPage(props: {
           <table className="w-full text-left border-collapse border border-gray-200 [&_th]:border [&_th]:border-gray-200 [&_td]:border [&_td]:border-gray-200">
             <thead>
               <tr className="bg-gray-50 border-y border-gray-200 text-sm font-semibold text-gray-600">
-                <th className="p-4">Reg ID</th>
                 <th className="p-4">Candidate</th>
                 <th className="p-4">Mobile</th>
+                <th className="p-4">Course</th>
                 <th className="p-4">Mode</th>
                 <th className="p-4">Date</th>
                 <th className="p-4 w-48">Remarks</th>
@@ -82,7 +82,6 @@ export default async function AdminRegistrationsPage(props: {
             <tbody className="divide-y divide-gray-200 text-sm">
               {registrations?.map((reg) => (
                 <tr key={reg.id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                  <td className="p-4 font-medium text-blue-600 whitespace-nowrap">{reg.registration_id}</td>
                   <td className="p-4">
                     <div className="flex items-center gap-3">
                       {reg.photo_storage_path ? (
@@ -103,6 +102,12 @@ export default async function AdminRegistrationsPage(props: {
                     </div>
                   </td>
                   <td className="p-4 text-gray-700 whitespace-nowrap">{reg.mobile_number}</td>
+                  <td className="p-4">
+                    <div className="text-gray-900 font-semibold mb-1.5">{reg.course_enrolled_in || 'N/A'}</div>
+                    {reg.course_enrolled_in === 'Others' && reg.other_course_details && (
+                      <div className="text-xs text-gray-500 bg-gray-50 p-1.5 rounded border border-gray-100">{reg.other_course_details}</div>
+                    )}
+                  </td>
                   <td className="p-4">
                     <div className="text-gray-700 capitalize font-medium whitespace-nowrap">{reg.mock_test_mode}</div>
                     {reg.mock_test_mode === 'offline' && (
