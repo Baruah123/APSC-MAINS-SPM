@@ -21,14 +21,17 @@ export default function ViewerLayout({ children }: { children: React.ReactNode }
 
   return (
     <AdminAuthProvider>
-      <div className="min-h-screen bg-gray-100 flex">
+      <div className="h-screen bg-gray-100 flex overflow-hidden">
       {/* Sidebar */}
       <div className="w-48 bg-white border-r border-gray-200 flex flex-col hidden md:flex">
         <div className="h-16 flex items-center px-6 border-b border-gray-200">
           <span className="text-lg font-bold text-gray-900">Viewer Portal</span>
         </div>
         <nav className="flex-1 p-4 space-y-1">
-          {/* Dashboard link hidden for viewer as per request */}
+          <Link href="/viewer" className="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-md hover:bg-gray-100 hover:text-gray-900">
+            <LayoutDashboard className="w-5 h-5 text-gray-500" />
+            Dashboard
+          </Link>
           <Link href="/viewer/registrations" className="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-md hover:bg-gray-100 hover:text-gray-900">
             <FileSpreadsheet className="w-5 h-5 text-gray-500" />
             Registrations

@@ -44,6 +44,7 @@ export async function POST(request: Request) {
           mobile_number: `'${registration.mobile_number}`, // Prefix with ' to prevent Excel/Sheets from dropping leading zeros
           email: registration.email,
           mode: registration.mock_test_mode === 'offline' ? 'Offline' : 'Online',
+          course: registration.course_enrolled_in === 'Others' ? `${registration.course_enrolled_in} - ${registration.other_course_details}` : registration.course_enrolled_in || 'N/A',
           preferred_location_1: registration.mock_test_mode === 'offline' ? pref1 : 'N/A',
           preferred_location_2: registration.mock_test_mode === 'offline' ? pref2 : 'N/A',
           transaction_id: registration.transaction_id || 'N/A'
