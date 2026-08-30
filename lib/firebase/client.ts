@@ -11,20 +11,26 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-
-// Initialize Firebase App Check
-if (typeof window !== "undefined") {
-  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6LdZk6AtAAAAABGvbkY1bV2ZrwyUv644c7ehi8c6";
-  try {
-    initializeAppCheck(app, {
-      provider: new ReCaptchaEnterpriseProvider(siteKey),
-      isTokenAutoRefreshEnabled: true
-    });
-  } catch (error) {
-    console.error("App Check initialization error:", error);
+let app;
+if (!getApps().length) {
+  app = initializeApp(firebaseConfig);
+  // Initialize Firebase App Check BEFORE any other services
+  if (typeof window !== "undefined") {
+    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6LdZk6AtAAAAABGvbkY1bV2ZrwyUv644c7ehi8c6";
+    try {
+      // Use self.FIREBASE_APPCHECK_DEBUG_TOKEN to allow localhost testing if needed
+      initializeAppCheck(app, {
+        provider: new ReCaptchaEnterpriseProvider(siteKey),
+        isTokenAutoRefreshEnabled: true
+      });
+    } catch (error) {
+      console.error("App Check initialization error:", error);
+    }
   }
+} else {
+  app = getApp();
 }
+
+const auth = getAuth(app);
 
 export { auth, app };
