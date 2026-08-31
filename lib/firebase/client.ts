@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -11,26 +11,26 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-let app;
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-  // Initialize Firebase App Check BEFORE any other services
-  if (typeof window !== "undefined") {
-    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6LdZk6AtAAAAABGvbkY1bV2ZrwyUv644c7ehi8c6";
-    try {
-      // Use self.FIREBASE_APPCHECK_DEBUG_TOKEN to allow localhost testing if needed
-      initializeAppCheck(app, {
-        provider: new ReCaptchaEnterpriseProvider(siteKey),
-        isTokenAutoRefreshEnabled: true
-      });
-    } catch (error) {
-      console.error("App Check initialization error:", error);
-    }
-  }
-} else {
-  app = getApp();
-}
-
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
+
+// Initialize Firebase App Check
+if (typeof window !== "undefined") {
+  // Automatically enable Debug Token on localhost to bypass the 403 Error
+  if (window.location.hostname === "localhost") {
+    // @ts-ignore
+    self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+  }
+  
+  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6LdZk6AtAAAAABGvbkY1bV2ZrwyUv644c7ehi8c6";
+  try {
+    initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider(siteKey),
+      isTokenAutoRefreshEnabled: true
+    });
+  } catch (error) {
+    console.error("App Check initialization error:", error);
+  }
+}
 
 export { auth, app };
