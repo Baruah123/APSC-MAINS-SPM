@@ -19,7 +19,7 @@ if (typeof window !== "undefined") {
   // Automatically enable Debug Token on localhost to bypass the 403 Error
   if (window.location.hostname === "localhost") {
     // @ts-ignore
-    self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+    self.FIREBASE_APPCHECK_DEBUG_TOKEN = "3b0457a3-30c8-4ef8-b240-47058ab2c6c5";
   }
   
   const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6LdZk6AtAAAAABGvbkY1bV2ZrwyUv644c7ehi8c6";

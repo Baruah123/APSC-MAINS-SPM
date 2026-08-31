@@ -1,13 +1,17 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase/client';
 import { useRouter, usePathname } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
+interface AuthUser {
+  uid: string;
+  email: string;
+  role: 'admin' | 'viewer';
+}
+
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   loading: boolean;
   logout: () => Promise<void>;
 }
@@ -21,27 +25,59 @@ const AuthContext = createContext<AuthContextType>({
 export const useAdminAuth = () => useContext(AuthContext);
 
 export default function AdminAuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-      
-      // If we are not loading, and there is no user, and we are not on the login page, redirect to login
-      if (!currentUser && pathname !== '/admin/login') {
-        router.push('/admin/login');
-      }
-    });
+  const isLoginPage = pathname === '/admin/login' || pathname === '/viewer/login';
 
-    return () => unsubscribe();
-  }, [pathname, router]);
+  useEffect(() => {
+    let isMounted = true;
+
+    async function checkAuth() {
+      try {
+        const response = await fetch('/api/admin/auth');
+        const data = await response.json();
+
+        if (isMounted) {
+          if (data.authenticated && data.user) {
+            setUser(data.user);
+          } else {
+            setUser(null);
+            if (!isLoginPage) {
+              router.push('/admin/login');
+            }
+          }
+        }
+      } catch (error) {
+        if (isMounted) {
+          setUser(null);
+          if (!isLoginPage) {
+            router.push('/admin/login');
+          }
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    checkAuth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [pathname, router, isLoginPage]);
 
   const logout = async () => {
-    await signOut(auth);
+    try {
+      await fetch('/api/admin/auth', { method: 'DELETE' });
+    } catch (e) {
+      console.error('Logout error:', e);
+    }
+    setUser(null);
     router.push('/admin/login');
   };
 
@@ -56,7 +92,7 @@ export default function AdminAuthProvider({ children }: { children: React.ReactN
   }
 
   // If not authenticated and not on login page, don't render children (redirect is happening)
-  if (!user && pathname !== '/admin/login') {
+  if (!user && !isLoginPage) {
     return null; 
   }
 

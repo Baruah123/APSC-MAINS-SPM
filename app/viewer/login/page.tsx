@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/lib/firebase/client';
 import { useRouter } from 'next/navigation';
 import { Loader2, ShieldCheck, Mail, Lock } from 'lucide-react';
 import Image from 'next/image';
@@ -20,26 +18,24 @@ export default function ViewerLogin() {
     setLoading(true);
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      
-      // Get the secure JWT token
-      const token = await userCredential.user.getIdToken();
-      
-      // Send token to our secure backend API to establish the server-side HTTP-Only cookie
       const response = await fetch('/api/admin/auth', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ token })
+        body: JSON.stringify({ email, password })
       });
 
       const data = await response.json();
       
+      if (!response.ok) {
+        throw new Error(data.error || 'Authentication failed');
+      }
+      
       if (data.role === 'admin') {
         router.push('/admin');
       } else {
-        router.push('/viewer'); // Redirect to viewer dashboard
+        router.push('/viewer'); // Redirect to dashboard
       }
     } catch (err: any) {
       setError('Invalid admin credentials or unauthorized access.');

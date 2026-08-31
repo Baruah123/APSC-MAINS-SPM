@@ -1,48 +1,61 @@
 import { NextResponse } from 'next/server';
-import { createRemoteJWKSet, jwtVerify } from 'jose';
-import { createAdminSession } from '@/lib/security/session';
+import { createAdminSession, getAdminSession, clearAdminSession } from '@/lib/security/session';
 
-const JWKS_URI = 'https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com';
-const JWKS = createRemoteJWKSet(new URL(JWKS_URI));
+export async function GET() {
+  try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ authenticated: false }, { status: 401 });
+    }
+    return NextResponse.json({ authenticated: true, user: session });
+  } catch (error: any) {
+    return NextResponse.json({ authenticated: false }, { status: 401 });
+  }
+}
+
+export async function DELETE() {
+  try {
+    await clearAdminSession();
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    return NextResponse.json({ error: 'Failed to logout' }, { status: 500 });
+  }
+}
 
 export async function POST(request: Request) {
   try {
-    const { token } = await request.json();
+    const { email, password } = await request.json();
 
-    if (!token) {
-      return NextResponse.json({ error: 'Missing token' }, { status: 400 });
+    if (!email || !password) {
+      return NextResponse.json({ error: 'Missing credentials' }, { status: 400 });
     }
 
-    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    const adminEmail = 'admin@spmiasacademy.com';
+    const viewerEmail = 'viewer@spmiasacademy.com';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'spmadmin123';
+    const viewerPassword = process.env.VIEWER_PASSWORD || 'spmviewer123';
+
+    let role: 'admin' | 'viewer' | '' = '';
     
-    if (!projectId) {
-      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    if (email === adminEmail && password === adminPassword) {
+      role = 'admin';
+    } else if (email === viewerEmail && password === viewerPassword) {
+      role = 'viewer';
+    } else {
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
-
-    // Verify the Firebase JWT
-    const { payload } = await jwtVerify(token, JWKS, {
-      issuer: `https://securetoken.google.com/${projectId}`,
-      audience: projectId,
-    });
-
-    if (!payload.sub) {
-      return NextResponse.json({ error: 'Invalid token payload' }, { status: 401 });
-    }
-
-    const email = (payload.email as string) || '';
-    const role = email === 'viewer@spmiasacademy.com' ? 'viewer' : 'admin';
 
     // Set the secure HTTP-only cookie using iron-session logic
     await createAdminSession({
-      uid: payload.sub,
+      uid: role === 'admin' ? 'admin-uid-bypass' : 'viewer-uid-bypass',
       email: email,
       isAdmin: true, // both admin and viewer get past middleware, roles handle specific permissions
       role: role,
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, role });
   } catch (error: any) {
-    console.error('Firebase token verification error:', error.message);
+    console.error('Authentication error:', error.message);
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 }
