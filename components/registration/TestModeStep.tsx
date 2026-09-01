@@ -38,7 +38,6 @@ export default function TestModeStep() {
     { id: '301843ca-c372-4e10-811d-fcdc763978c8', name: 'Jorhat' },
     { id: '4e324de0-d104-4ba9-8ded-220883f5d0ce', name: 'Guwahati' },
     { id: 'abd06aa0-8366-47dd-8c07-16cc78831a8f', name: 'Tezpur' },
-    { id: '5cc8157a-6f78-48f0-bdc9-c03d140eb3a1', name: 'Nalbari' },
     { id: 'd21e1bc4-6c40-4e43-9737-9235f476691e', name: 'Kokrajhar' },
   ];
 
