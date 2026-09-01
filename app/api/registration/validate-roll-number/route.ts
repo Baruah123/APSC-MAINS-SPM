@@ -5,11 +5,8 @@ import { supabaseAdmin } from '@/lib/supabase/server';
 
 export async function POST(request: Request) {
   try {
+    // Step 1: Roll number validation does not require mobile_verified session
     const session = await getSession();
-    
-    if (!session || !session.mobile_verified) {
-      return NextResponse.json({ error: 'Unauthorized. Please verify mobile number first.' }, { status: 401 });
-    }
 
     const body = await request.json();
     const result = rollNumberSchema.safeParse(body);

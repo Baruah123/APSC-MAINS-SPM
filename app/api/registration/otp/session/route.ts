@@ -16,6 +16,11 @@ export async function POST(request: Request) {
     }
 
     const { mobile } = result.data;
+
+    const session = await getSession();
+    if (!session || !session.roll_number) {
+      return NextResponse.json({ error: 'Unauthorized. Please validate your APSC Roll Number first.' }, { status: 401 });
+    }
     
     // In a fully secure setup, we would verify the Firebase token here via Firebase Admin API.
     // However, since we are using the frontend widget which doesn't expose a clear backend verification endpoint 
