@@ -21,7 +21,7 @@ type MobileFormValues = z.infer<typeof mobileSchema>;
 type OtpFormValues = z.infer<typeof otpSchema>;
 
 export default function MobileStep() {
-  const { state, updateState, nextStep } = useWizard();
+  const { state, updateState, nextStep, prevStep } = useWizard();
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -209,17 +209,27 @@ export default function MobileStep() {
           
           <div id="recaptcha-container" className="flex justify-center mt-4 mb-4 w-full"></div>
           
-          <button
-            type="submit"
-            disabled={loading || !isRecaptchaVerified}
-            className={`w-full text-white font-medium py-3.5 px-4 rounded-lg focus:ring-4 focus:ring-[#edf2fa] transition-colors flex justify-center items-center text-[15px] tracking-wide ${
-              loading || !isRecaptchaVerified 
-                ? 'bg-blue-400 cursor-not-allowed opacity-70' 
-                : 'bg-[#1a56db] hover:bg-[#1546b5]'
-            }`}
-          >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Send OTP'}
-          </button>
+          <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
+            <button
+              type="button"
+              onClick={prevStep}
+              disabled={loading}
+              className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+            >
+              Back
+            </button>
+            <button
+              type="submit"
+              disabled={loading || !isRecaptchaVerified}
+              className={`w-full sm:flex-1 text-white font-medium py-3.5 px-4 rounded-lg focus:ring-4 focus:ring-[#edf2fa] transition-colors flex justify-center items-center text-[15px] tracking-wide ${
+                loading || !isRecaptchaVerified 
+                  ? 'bg-blue-400 cursor-not-allowed opacity-70' 
+                  : 'bg-[#1a56db] hover:bg-[#1546b5]'
+              }`}
+            >
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Send OTP'}
+            </button>
+          </div>
         </form>
       ) : (
         <form onSubmit={otpForm.handleSubmit(onVerifyOtp)} className="space-y-4">

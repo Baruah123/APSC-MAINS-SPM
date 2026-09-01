@@ -72,17 +72,9 @@ export default function RollNumberStep() {
           
           <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
             <button
-              type="button"
-              onClick={prevStep}
-              disabled={loading}
-              className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
-            >
-              Back
-            </button>
-            <button
               type="submit"
               disabled={loading}
-              className="w-full sm:flex-1 bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-100 transition-colors disabled:opacity-70 flex justify-center items-center"
+              className="w-full bg-blue-600 text-white font-medium py-3.5 px-4 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-100 transition-colors disabled:opacity-70 flex justify-center items-center text-[15px]"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Validate & Continue'}
             </button>
@@ -122,7 +114,7 @@ export default function RollNumberStep() {
               onClick={nextStep}
               className="w-full sm:flex-1 bg-blue-600 text-white font-medium py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-100 transition-colors flex justify-center items-center"
             >
-              Continue to Photo Capture
+              Continue to Mobile Verification
             </button>
           </div>
         </div>
